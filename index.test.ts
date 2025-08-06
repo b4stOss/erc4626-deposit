@@ -187,7 +187,7 @@ test("deposit should throw NotEnoughBalanceError when balance is insufficient", 
     const testAccount = privateKeyToAccount("0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d");
     
     // This account has no tokens, so any deposit should fail
-    await expect(async () => {
+    expect(async () => {
         await deposit(publicClient, {
             wallet: testAccount.address,
             vault: vaultAddress,
@@ -213,7 +213,7 @@ test("deposit should throw MissingAllowanceError when allowance is insufficient"
         args: [vaultAddress, parseEther("10")], // Less than deposit amount
     });
 
-    await expect(async () => {
+    expect(async () => {
         await deposit(publicClient, {
             wallet: account.address,
             vault: vaultAddress,
@@ -246,7 +246,7 @@ test("deposit should throw AmountExceedsMaxDepositError when amount exceeds max 
         args: [parseEther("50")], // Lower than deposit amount
     });
 
-    await expect(async () => {
+    expect(async () => {
         await deposit(publicClient, {
             wallet: account.address,
             vault: vaultAddress,
