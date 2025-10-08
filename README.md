@@ -1,66 +1,84 @@
-## Foundry
+# ERC4626 Deposit Helper
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+A TypeScript library for safely depositing assets into ERC4626 vaults with pre-transaction validation.
 
-Foundry consists of:
+## 🎯 Overview
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+This library provides a robust `deposit` function that validates all necessary conditions before building the transaction, preventing common errors when interacting with ERC4626 vaults:
+- ✅ Sufficient balance
+- ✅ Adequate allowance
+- ✅ Respect vault's maxDeposit limits
 
-## Documentation
+## 🛠️ Tech Stack
 
-https://book.getfoundry.sh/
+- **Runtime**: [Bun](https://bun.sh)
+- **Language**: TypeScript
+- **Ethereum Library**: [viem](https://viem.sh)
+- **Testing**: Bun test + Foundry (Anvil)
+- **Smart Contracts**: Solidity (Mock contracts for testing)
 
-## Usage
+## ✨ Features
 
-### Build
+- **Type-safe**: Full TypeScript support with viem
+- **Pre-validation**: Checks balance, allowance, and maxDeposit before transaction
+- **Gas estimation**: Automatic gas estimation included
+- **Error handling**: Specific error types for different failure scenarios
+- **Zero dependencies**: Uses only viem for Ethereum interactions
 
-```shell
-$ forge build
+## 📦 Installation
+
+```bash
+bun install
 ```
 
-### Test
+## 🚀 Usage
 
-```shell
-$ forge test
+```typescript
+import { createPublicClient, http } from "viem";
+import { deposit } from "./index";
+
+const client = createPublicClient({
+  chain: mainnet,
+  transport: http(),
+});
+
+const transaction = await deposit(client, {
+  wallet: "0x...",
+  vault: "0x...",
+  amount: 1000000000000000000n, // 1 token (18 decimals)
+});
+
+// Transaction object ready to be signed and sent
+console.log(transaction);
 ```
 
-### Format
+## 🧪 Testing
 
-```shell
-$ forge fmt
+```bash
+# Build Solidity contracts
+forge build
+
+# Run tests (automatically starts Anvil)
+bun test
 ```
 
-### Gas Snapshots
+## 🔍 API
 
-```shell
-$ forge snapshot
-```
+### `deposit(client, params)`
 
-### Anvil
+**Parameters:**
+- `client`: viem PublicClient instance
+- `params.wallet`: User's wallet address
+- `params.vault`: ERC4626 vault address
+- `params.amount`: Amount to deposit (in wei)
 
-```shell
-$ anvil
-```
+**Returns:** Promise<Transaction>
 
-### Deploy
+**Throws:**
+- `NotEnoughBalanceError`: Insufficient token balance
+- `MissingAllowanceError`: Insufficient allowance for vault
+- `AmountExceedsMaxDepositError`: Amount exceeds vault's maxDeposit
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
+## 📝 License
 
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+MIT
